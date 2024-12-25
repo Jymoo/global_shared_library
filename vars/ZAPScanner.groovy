@@ -8,7 +8,7 @@
  *   ZAPScanner()
  */
 
-def call(String zapDockerImage = 'owasp/zap2docker-stable:latest', String reportName = 'zap_full_report.html', String failOnRiskLevel = 'High') {
+def call(String zapDockerImage = 'owasp/modsecurity-crs', String reportName = 'zap_full_report.html', String failOnRiskLevel = 'High') {
     // Configure environment variables using EnvironmentConfig
     EnvironmentConfig()
 
