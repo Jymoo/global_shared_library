@@ -28,6 +28,12 @@ def call(Map params = [:]) {
     sh """
         mkdir -p /tmp/threagile-work
         cp /var/jenkins_home/workspace/Shared-Library/threagile.yaml /tmp/threagile-work/ 
+
+        # Check if the file was copied successfully
+        if [ ! -f "/tmp/threagile-work/threagile.yaml" ]; then
+            error "Failed to copy threagile.yaml to /tmp/threagile-work"
+        fi
+
         docker run --rm -v /tmp/threagile-work:/app/work ${dockerImage} -verbose -model /app/work/threagile.yaml -output /app/work/${outputDir}
 
     """
