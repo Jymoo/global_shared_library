@@ -26,15 +26,36 @@ def call(Map params = [:]) {
     // Run the Docker container with the provided command  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}        docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}   docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}
     echo "Running Docker container..."
     sh """
-        mkdir -p /tmp/threagile-work
-        cp /var/jenkins_home/workspace/Shared-Library/threagile.yaml /tmp/threagile-work/ 
+       mkdir -p /tmp/threagile-work
+
+        echo "Copying threagile.yaml to /tmp/threagile-work..."
+        cp /var/jenkins_home/workspace/Shared-Library/threagile.yaml /tmp/threagile-work/
 
         # Check if the file was copied successfully
         if [ ! -f "/tmp/threagile-work/threagile.yaml" ]; then
             error "Failed to copy threagile.yaml to /tmp/threagile-work"
+        else
+            echo "threagile.yaml copied successfully to /tmp/threagile-work"
         fi
 
-        docker run --rm -v /tmp/threagile-work:/app/work ${dockerImage} -verbose -model /app/work/threagile.yaml -output /app/work/${outputDir}
+        # Run Docker container
+        echo "Running Docker container..."
+        docker run --rm -v /tmp/threagile-work:/app/work ${dockerImage} -verbose -model /app/work/threagile.yaml -output /app/work/results
+
+        # Check if output directory exists
+        if [ ! -d "/tmp/threagile-work/results" ]; then
+            error "Output directory /app/work/results not found in the container."
+        else
+            echo "Output directory /app/work/results found in the container."
+        fi
+
+        # Check if report file exists
+        reportFile="report.pdf" 
+        if [ ! -f "/tmp/threagile-work/results/${reportFile}" ]; then
+            error "Report file ${reportFile} not found in the output directory."
+        else
+            echo "Report file ${reportFile} found in the output directory."
+        fi
 
     """
     
