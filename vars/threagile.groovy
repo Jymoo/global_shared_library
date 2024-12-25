@@ -40,7 +40,7 @@ def call(Map params = [:]) {
 
         # Run Docker container
         echo "Running Docker container..."
-        docker run --rm -v /tmp/threagile-work:/app/work ${dockerImage} -verbose -model /app/work/threagile.yaml -output /app/work/results
+        docker run --rm -v /tmp/threagile-work:/app/work ${dockerImage} -verbose -model /tmp/threagile-work/threagile.yaml -output /app/work/results
 
         # Check if output directory exists
         if [ ! -d "/tmp/threagile-work/results" ]; then
