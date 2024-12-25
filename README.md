@@ -1,1 +1,1 @@
-# github-api-global-lib
+# global shared library
