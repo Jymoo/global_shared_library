@@ -52,7 +52,7 @@ echo "Creating temporary workspace at ${tempWorkspace}..."
 sh "mkdir -p ${tempWorkspace}"
 
 // Copy the threagile.yaml file to the temporary workspace
-def fileName = threagileYamlPath.tokenize('/').last()  // Get the file name from the path
+def fileName = new File(threagileYamlPath).name 
 echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
 sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
 
