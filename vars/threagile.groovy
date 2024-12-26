@@ -25,43 +25,43 @@ def call(Map params = [:]) {
         sh "docker pull ${dockerImage}"
     }
 
-    // Run the Docker container with the provided command  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}        docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}   docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}
-    // echo "Running Docker container..."
-    // sh """
-    //    docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir} 
-    // """
+   // Run the Docker container with the provided command  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}        docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}   docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}
+    echo "Running Docker container..."
+    sh """
+       docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir} 
+    """
 
 
 
     
 
-def newWorkspacePath = "/home/jenkins/threagile_workspaces" // New path within /home
+// def newWorkspacePath = "/home/jenkins/threagile_workspaces" // New path within /home
 
-// Create the new workspace directory
-sh "mkdir -p ${newWorkspacePath}"
+// // Create the new workspace directory
+// sh "mkdir -p ${newWorkspacePath}"
 
-// Move the existing workspace to the new location
-sh "mv ${tempWorkspace} ${newWorkspacePath}/threagile_workspace" 
+// // Move the existing workspace to the new location
+// sh "mv ${tempWorkspace} ${newWorkspacePath}/threagile_workspace" 
 
-// Update the tempWorkspace variable to reflect the new location
-tempWorkspace = "${newWorkspacePath}/threagile_workspace"
+// // Update the tempWorkspace variable to reflect the new location
+// tempWorkspace = "${newWorkspacePath}/threagile_workspace"
 
-// (Rest of the code remains the same)
+// // (Rest of the code remains the same)
 
-echo "Creating temporary workspace at ${tempWorkspace}..."
-sh "mkdir -p ${tempWorkspace}"
+// echo "Creating temporary workspace at ${tempWorkspace}..."
+// sh "mkdir -p ${tempWorkspace}"
 
-// Copy the threagile.yaml file to the temporary workspace
-def fileName = new File(threagileYamlPath).name 
-echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
-sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
+// // Copy the threagile.yaml file to the temporary workspace
+// def fileName = new File(threagileYamlPath).name 
+// echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
+// sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
 
-// Run the Docker container with the updated paths, from the temporary workspace
-echo "Running Docker container..."
-sh """
-    docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app --userns=host  ${dockerImage} \
-    -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
-"""
+// // Run the Docker container with the updated paths, from the temporary workspace
+// echo "Running Docker container..."
+// sh """
+//     docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app --userns=host  ${dockerImage} \
+//     -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
+// """
 
 
 
