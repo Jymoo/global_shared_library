@@ -40,6 +40,9 @@ def call(Map params = [:]) {
     echo "Creating temporary workspace at ${tempWorkspace}..."
     sh "mkdir -p ${tempWorkspace}"
 
+    //sudo chown -R jenkins:jenkins /home/jenkins/threagile_workspace
+    //sudo chmod -R 755 /home/jenkins/threagile_workspace
+
     // Copy the threagile.yaml file to the temporary workspace
     def fileName = threagileYamlPath.tokenize('/').last()  // Get the file name from the path
     echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
@@ -48,7 +51,7 @@ def call(Map params = [:]) {
     // Run the Docker container with the updated paths, from the temporary workspace
     echo "Running Docker container..."
     sh """
-       docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app ${dockerImage} \
+       docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app --userns=host  ${dockerImage} \
        -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
     """
 
