@@ -32,8 +32,11 @@ def call(Map params = [:]) {
     // """
 
 
-    // Create a temporary workspace folder in /tmp
-    def tempWorkspace = "/tmp/threagile_workspace"
+
+    
+
+       // Create a temporary workspace folder in /home/jenkins
+    def tempWorkspace = "/home/jenkins/threagile_workspace"
     echo "Creating temporary workspace at ${tempWorkspace}..."
     sh "mkdir -p ${tempWorkspace}"
 
@@ -45,9 +48,14 @@ def call(Map params = [:]) {
     // Run the Docker container with the updated paths, from the temporary workspace
     echo "Running Docker container..."
     sh """
-       docker run --rm -v ${tempWorkspace}:/app/work -v \$(pwd):/app ${dockerImage} \
+       docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app ${dockerImage} \
        -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
     """
+
+
+
+
+    
     
     // After running the container, check if the report.pdf file exists in the output directory
     def reportPath = "${PWD}/${outputDir}/${reportFile}"
