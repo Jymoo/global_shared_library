@@ -5,6 +5,8 @@ def call(Map params = [:]) {
     def threagileYamlPath = params.threagileYamlPath ?: 'threagile.yaml'
     def outputDir = params.outputDir ?: 'results'
     def reportFile = params.reportFile ?: 'report.pdf'
+
+    
     
     
     // Check if the Docker image exists locally
@@ -24,9 +26,27 @@ def call(Map params = [:]) {
     }
 
     // Run the Docker container with the provided command  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}  docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}        docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}   docker run --rm -v /tmp:/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir}
+    // echo "Running Docker container..."
+    // sh """
+    //    docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir} 
+    // """
+
+
+    // Create a temporary workspace folder in /tmp
+    def tempWorkspace = "/tmp/threagile_workspace"
+    echo "Creating temporary workspace at ${tempWorkspace}..."
+    sh "mkdir -p ${tempWorkspace}"
+
+    // Copy the threagile.yaml file to the temporary workspace
+    def fileName = threagileYamlPath.tokenize('/').last()  // Get the file name from the path
+    echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
+    sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
+
+    // Run the Docker container with the updated paths, from the temporary workspace
     echo "Running Docker container..."
     sh """
-       docker run --rm -v \$(pwd):/app/work ${dockerImage} -verbose -model /app/work/${threagileYamlPath} -output /app/work/${outputDir} 
+       docker run --rm -v ${tempWorkspace}:/app/work -v \$(pwd):/app ${dockerImage} \
+       -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
     """
     
     // After running the container, check if the report.pdf file exists in the output directory
