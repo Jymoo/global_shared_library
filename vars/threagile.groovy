@@ -35,26 +35,33 @@ def call(Map params = [:]) {
 
     
 
-       // Create a temporary workspace folder in /home/jenkins
-    def tempWorkspace = "/home/jenkins/threagile_workspace"
-    echo "Creating temporary workspace at ${tempWorkspace}..."
-    sh "mkdir -p ${tempWorkspace}"
+def newWorkspacePath = "/home/jenkins/threagile_workspaces" // New path within /home
 
-    //sudo chown -R jenkins:jenkins /home/jenkins/threagile_workspace
-    //sudo chmod -R 755 /home/jenkins/threagile_workspace
+// Create the new workspace directory
+sh "mkdir -p ${newWorkspacePath}"
 
-    // Copy the threagile.yaml file to the temporary workspace
-    def fileName = threagileYamlPath.tokenize('/').last()  // Get the file name from the path
-    echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
-    sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
+// Move the existing workspace to the new location
+sh "mv ${tempWorkspace} ${newWorkspacePath}/threagile_workspace" 
 
-    // Run the Docker container with the updated paths, from the temporary workspace
-    echo "Running Docker container..."
-    sh """
-       docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app --userns=host  ${dockerImage} \
-       -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
-    """
+// Update the tempWorkspace variable to reflect the new location
+tempWorkspace = "${newWorkspacePath}/threagile_workspace"
 
+// (Rest of the code remains the same)
+
+echo "Creating temporary workspace at ${tempWorkspace}..."
+sh "mkdir -p ${tempWorkspace}"
+
+// Copy the threagile.yaml file to the temporary workspace
+def fileName = threagileYamlPath.tokenize('/').last()  // Get the file name from the path
+echo "Copying ${threagileYamlPath} to ${tempWorkspace}/${fileName}..."
+sh "cp ${threagileYamlPath} ${tempWorkspace}/${fileName}"
+
+// Run the Docker container with the updated paths, from the temporary workspace
+echo "Running Docker container..."
+sh """
+    docker run --rm -v ${tempWorkspace}:/app/work -v /home/jenkins/workspace/devsecops:/app --userns=host  ${dockerImage} \
+    -verbose -model /app/work/${fileName} -output /app/work/${outputDir}
+"""
 
 
 
